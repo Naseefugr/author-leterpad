@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ChromaDiaries - Letter Pad & Poster Generator</title>
+  
+  <!-- Local Google Fonts for Raleway & Poppins (100% Offline Compatible) -->
+  <link rel="stylesheet" href="fonts/fonts.css">
+  
+  <!-- Fallback to Google Fonts CDN if local fonts are ever moved -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Raleway:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-layout">
+    <!-- TOP NAVIGATION BAR -->
+    <header class="app-header">
+      <div class="header-brand">
+        <div class="brand-badge">CD</div>
+        <div class="brand-text">
+          <h1>ChromaDiaries</h1>
+          <span class="sub-title">Author Selection Letterpad &amp; Poster Studio</span>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button id="btn-load-model" class="btn btn-secondary" title="Load exact sample data from model.png">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg>
+          Reset to Model
+        </button>
+        <button id="btn-test-overflow" class="btn btn-secondary" title="Test long text to verify auto-shrink margin maintenance">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7V4h16v3"/><path d="M9 20h6"/><path d="M12 4v16"/></svg>
+          Long Text Test
+        </button>
+        <button id="btn-print" class="btn btn-outline" title="Print document directly">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+          Print
+        </button>
+        <button id="btn-download-pdf" class="btn btn-outline" title="Export as standard A4 300 DPI PDF">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+          Export PDF
+        </button>
+        <button id="btn-download-png" class="btn btn-primary" title="Export as 2480 x 3508 High-Res PNG">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Download PNG (300 DPI)
+        </button>
+      </div>
+    </header>
+
+    <!-- MAIN TWO-COLUMN WORKSPACE -->
+    <main class="app-workspace">
+      <!-- LEFT COLUMN: CONTROLS & FORM -->
+      <aside class="editor-sidebar">
+        <!-- MARGIN STATUS BANNER -->
+        <div id="margin-status-banner" class="margin-banner status-ok">
+          <div class="status-icon">✓</div>
+          <div class="status-content">
+            <span class="status-title">Margins Maintained</span>
+            <span id="margin-status-detail" class="status-desc">All content is strictly within the red margin bounds.</span>
+          </div>
+          <button id="btn-quick-toggle-margin" class="btn-micro" title="Toggle red margin guidelines">Guides</button>
+        </div>
+
+        <form id="generator-form" autocomplete="off" onsubmit="return false;">
+          
+          <!-- SECTION 1: DATE & RECIPIENT -->
+          <div class="form-card">
+            <div class="card-header">
+              <span class="step-num">01</span>
+              <h2>Recipient &amp; Date</h2>
+              <span class="card-badge" id="badge-card-1">Spec Size</span>
+            </div>
+            
+            <div class="input-group">
+              <label for="input-name">
+                Input 01: Recipient Name
+                <span class="font-spec">Raleway SemiBold</span>
+              </label>
+              <div class="field-with-prefix">
+                <span class="prefix-label">Dear</span>
+                <input type="text" id="input-name" class="form-control" value="Tanishka Lalwani" placeholder="Recipient Name" required>
+                <span class="suffix-label">,</span>
+              </div>
+              <small class="helper-text">Renders as: <code>Dear {Name},</code></small>
+            </div>
+
+            <!-- Granular Control: Recipient Name Font Size -->
+            <div class="slider-control-row">
+              <div class="slider-label-group">
+                <span class="sub-label">Name Size:</span>
+                <span class="val-badge" id="name-size-val">14.68 pt</span>
+              </div>
+              <input type="range" id="name-size-slider" min="10" max="24" step="0.2" value="14.68" class="range-slider">
+              <button type="button" class="btn-reset-slider" data-target="name-size-slider" data-default="14.68" title="Reset to spec">↺</button>
+            </div>
+
+            <div class="input-group" style="margin-top: 6px;">
+              <label for="input-date">
+                Input 05: Date
+                <span class="font-spec">Poppins Italic</span>
+              </label>
+              <div class="field-with-actions">
+                <div class="field-with-prefix" style="flex:1;">
+                  <span class="prefix-label">Date:</span>
+                  <input type="text" id="input-date" class="form-control" value="05/04/2026" placeholder="DD/MM/YYYY">
+                </div>
+                <button type="button" id="btn-today" class="btn btn-sm btn-ghost" title="Set to today's date">Today</button>
+              </div>
+              <small class="helper-text">Placed in top-right date box [X: 1667..2035, Y: 529..607]</small>
+            </div>
+
+            <!-- Granular Control: Date Font Size -->
+            <div class="slider-control-row">
+              <div class="slider-label-group">
+                <span class="sub-label">Date Size:</span>
+                <span class="val-badge" id="date-size-val">10.00 pt</span>
+              </div>
+              <input type="range" id="date-size-slider" min="7" max="16" step="0.2" value="10.0" class="range-slider">
+              <button type="button" class="btn-reset-slider" data-target="date-size-slider" data-default="10.0" title="Reset to spec">↺</button>
+            </div>
+          </div>
+
+          <!-- SECTION 2: PUBLICATION ANNOUNCEMENT -->
+          <div class="form-card">
+            <div class="card-header">
+              <span class="step-num">02</span>
+              <h2>Publication Announcement</h2>
+              <span class="card-badge" id="badge-card-2">Heading + Paragraph</span>
+            </div>
+
+            <div class="input-group">
+              <label for="input-title">
+                Input 02: Title of Writings
+                <span class="font-spec">Raleway SemiBold</span>
+              </label>
+              <input type="text" id="input-title" class="form-control" value="That type of woman" placeholder="Enter writing title" required>
+            </div>
+
+            <!-- Visual Preview of Heading + Paragraph break -->
+            <div class="announcement-preview-box">
+              <span class="preview-tag">Live Layout (Heading + Paragraph):</span>
+              <p class="preview-text">
+                <span class="heading-line font-bold">Greetings from ChromaDiaries!</span>
+                <span class="body-para">
+                  <span class="font-regular">We are happy to inform you that your writing,</span>
+                  <strong id="preview-title" class="font-semibold">“That type of woman”</strong><span class="font-regular">, has been selected for publication on our official website. Congratulations on your achievement!</span>
+                </span>
+              </p>
+            </div>
+
+            <!-- Granular Controls for Announcement -->
+            <div class="controls-subset">
+              <span class="subset-title">Typography &amp; Spacing Controls:</span>
+              
+              <div class="slider-control-row">
+                <div class="slider-label-group">
+                  <span class="sub-label">Heading Size:</span>
+                  <span class="val-badge" id="heading-size-val">13.68 pt</span>
+                </div>
+                <input type="range" id="heading-size-slider" min="10" max="22" step="0.2" value="13.68" class="range-slider">
+                <button type="button" class="btn-reset-slider" data-target="heading-size-slider" data-default="13.68" title="Reset">↺</button>
+              </div>
+
+              <div class="slider-control-row">
+                <div class="slider-label-group">
+                  <span class="sub-label">Heading Gap:</span>
+                  <span class="val-badge" id="heading-gap-val">72 px</span>
+                </div>
+                <input type="range" id="heading-gap-slider" min="40" max="110" step="2" value="72" class="range-slider">
+                <button type="button" class="btn-reset-slider" data-target="heading-gap-slider" data-default="72" title="Reset">↺</button>
+              </div>
+
+              <div class="slider-control-row">
+                <div class="slider-label-group">
+                  <span class="sub-label">Body Size:</span>
+                  <span class="val-badge" id="body-size-val">13.68 pt</span>
+                </div>
+                <input type="range" id="body-size-slider" min="9" max="20" step="0.2" value="13.68" class="range-slider">
+                <button type="button" class="btn-reset-slider" data-target="body-size-slider" data-default="13.68" title="Reset">↺</button>
+              </div>
+
+              <div class="slider-control-row">
+                <div class="slider-label-group">
+                  <span class="sub-label">Body Line Height:</span>
+                  <span class="val-badge" id="body-lh-val">68 px</span>
+                </div>
+                <input type="range" id="body-lh-slider" min="48" max="92" step="2" value="68" class="range-slider">
+                <button type="button" class="btn-reset-slider" data-target="body-lh-slider" data-default="68" title="Reset">↺</button>
+              </div>
+            </div>
+
+            <div class="collapsible-wrapper">
+              <button type="button" class="btn-toggle-advanced" id="btn-toggle-announcement-custom">
+                <span>Advanced: Edit Full Announcement Text</span>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+              <div id="announcement-custom-panel" class="advanced-panel hidden">
+                <label for="input-custom-heading">Heading Text:</label>
+                <input type="text" id="input-custom-heading" class="form-control" value="Greetings from ChromaDiaries!" style="margin-bottom:8px;">
+                <label for="input-custom-announcement">Body Template (Use <code>{title}</code> for title):</label>
+                <textarea id="input-custom-announcement" class="form-control" rows="3">We are happy to inform you that your writing, “{title}”, has been selected for publication on our official website. Congratulations on your achievement!</textarea>
+              </div>
+            </div>
+          </div>
+
+          <!-- SECTION 3: ASSESSMENT SCORES (IN BOX) -->
+          <div class="form-card">
+            <div class="card-header">
+              <span class="step-num">03</span>
+              <h2>Writing Assessment Scores</h2>
+              <span class="card-badge">In Box</span>
+            </div>
+            <p class="section-desc">Font: Raleway labels + Poppins Regular 13.68 pt percentages</p>
+
+            <div class="score-grid">
+              <div class="score-row">
+                <label for="score-content">Content &amp; Idea</label>
+                <div class="score-input-wrap">
+                  <span class="colon">:</span>
+                  <input type="text" id="score-content" class="score-input form-control" value="90%" maxlength="6">
+                </div>
+              </div>
+
+              <div class="score-row">
+                <label for="score-expression">Expression</label>
+                <div class="score-input-wrap">
+                  <span class="colon">:</span>
+                  <input type="text" id="score-expression" class="score-input form-control" value="95%" maxlength="6">
+                </div>
+              </div>
+
+              <div class="score-row">
+                <label for="score-language">Language</label>
+                <div class="score-input-wrap">
+                  <span class="colon">:</span>
+                  <input type="text" id="score-language" class="score-input form-control" value="98%" maxlength="6">
+                </div>
+              </div>
+
+              <div class="score-row">
+                <label for="score-structure">Structure &amp; Presentation</label>
+                <div class="score-input-wrap">
+                  <span class="colon">:</span>
+                  <input type="text" id="score-structure" class="score-input form-control" value="93%" maxlength="6">
+                </div>
+              </div>
+
+              <div class="score-row">
+                <label for="score-overall">Overall Editorial Assessment</label>
+                <div class="score-input-wrap">
+                  <span class="colon">:</span>
+                  <input type="text" id="score-overall" class="score-input form-control" value="94%" maxlength="6">
+                </div>
+              </div>
+            </div>
+
+            <!-- Granular Controls for Scores -->
+            <div class="controls-subset">
+              <span class="subset-title">Score Box Tuning Controls:</span>
+              
+              <div class="slider-control-row">
+                <div class="slider-label-group">
+                  <span class="sub-label">Scores Size:</span>
+                  <span class="val-badge" id="scores-size-val">13.68 pt</span>
+                </div>
+                <input type="range" id="scores-size-slider" min="10" max="20" step="0.2" value="13.68" class="range-slider">
+                <button type="button" class="btn-reset-slider" data-target="scores-size-slider" data-default="13.68" title="Reset">↺</button>
+              </div>
+
+              <div class="slider-control-row">
+                <div class="slider-label-group">
+                  <span class="sub-label">Row Spacing:</span>
+                  <span class="val-badge" id="scores-spacing-val">75 px</span>
+                </div>
+                <input type="range" id="scores-spacing-slider" min="55" max="95" step="1" value="75" class="range-slider">
+                <button type="button" class="btn-reset-slider" data-target="scores-spacing-slider" data-default="75" title="Reset">↺</button>
+              </div>
+
+              <div class="slider-control-row">
+                <div class="slider-label-group">
+                  <span class="sub-label">Score Column X:</span>
+                  <span class="val-badge" id="scores-pos-val">1182 px</span>
+                </div>
+                <input type="range" id="scores-pos-slider" min="1130" max="1230" step="2" value="1182" class="range-slider">
+                <button type="button" class="btn-reset-slider" data-target="scores-pos-slider" data-default="1182" title="Reset">↺</button>
+              </div>
+            </div>
+
+            <div class="quick-presets">
+              <span class="preset-label">Quick Presets:</span>
+              <button type="button" class="chip-preset" data-scores="90%,95%,98%,93%,94%">Model Default</button>
+              <button type="button" class="chip-preset" data-scores="95%,96%,97%,95%,96%">High Honors</button>
+              <button type="button" class="chip-preset" data-scores="88%,85%,90%,87%,88%">Good</button>
+            </div>
+          </div>
+
+          <!-- SECTION 4: EDITOR REVIEW -->
+          <div class="form-card">
+            <div class="card-header">
+              <span class="step-num">04</span>
+              <h2>Editor Review Note</h2>
+              <span class="card-badge" id="badge-card-4">Dynamic Fit</span>
+            </div>
+            
+            <div class="input-group">
+              <label for="input-review">
+                Input 04: Editor Assessment Note
+                <span class="font-spec">Regular 13.68 pt base</span>
+              </label>
+              <textarea id="input-review" class="form-control" rows="2" placeholder="e.g. Very strong with minor weaknesses">Very strong with minor weaknesses</textarea>
+              <small class="helper-text">Renders inside [X: 1568..2092, Y: 1930..2064]. Small text enlarges; long text shrinks.</small>
+            </div>
+
+            <!-- Smart Auto-Size Toggle & Granular Slider -->
+            <div class="setting-toggle-row" style="margin-top: 4px;">
+              <div class="toggle-info">
+                <span class="toggle-title">Smart Auto-Size Review</span>
+                <span class="toggle-desc">Auto-enlarges short text &amp; auto-reduces long text to fill box</span>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="review-smart-autosize" checked>
+                <span class="slider round"></span>
+              </label>
+            </div>
+
+            <div class="slider-control-row">
+              <div class="slider-label-group">
+                <span class="sub-label">Review Font Size:</span>
+                <span class="val-badge" id="review-size-val">13.68 pt</span>
+              </div>
+              <input type="range" id="review-size-slider" min="9" max="26" step="0.2" value="13.68" class="range-slider">
+              <button type="button" class="btn-reset-slider" data-target="review-size-slider" data-default="13.68" title="Reset">↺</button>
+            </div>
+
+            <div class="review-presets">
+              <span class="preset-label">Test Different Lengths:</span>
+              <button type="button" class="chip-preset review-chip" data-review="Outstanding!">Short: "Outstanding!"</button>
+              <button type="button" class="chip-preset review-chip" data-review="Very strong with minor weaknesses">Model: "Very strong with..."</button>
+              <button type="button" class="chip-preset review-chip" data-review="Exceptional narrative depth, vivid emotional resonance, and compelling thematic exploration throughout the manuscript.">Long Review (Auto-shrinks)</button>
+            </div>
+          </div>
+
+          <!-- SECTION 5: ADVANCED TUNING & MARGIN SETTINGS -->
+          <div class="form-card">
+            <div class="card-header">
+              <span class="step-num">05</span>
+              <h2>Global Margin &amp; Scale Options</h2>
+            </div>
+
+            <div class="setting-toggle-row">
+              <div class="toggle-info">
+                <span class="toggle-title">Global Margin Enforcement</span>
+                <span class="toggle-desc">Automatically prevent any content from crossing red margins</span>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="setting-autoscale" checked>
+                <span class="slider round"></span>
+              </label>
+            </div>
+
+            <div class="setting-toggle-row">
+              <div class="toggle-info">
+                <span class="toggle-title">Clear Overflow Footer</span>
+                <span class="toggle-desc">Remove "Wishing you all the best!" (matches model.png to keep within Y=2553)</span>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="setting-clear-footer" checked>
+                <span class="slider round"></span>
+              </label>
+            </div>
+
+            <div class="input-group" style="margin-top: 10px;">
+              <div class="range-header">
+                <label for="setting-scale-factor">Global Scale Multiplier</label>
+                <span id="scale-factor-display">100%</span>
+              </div>
+              <input type="range" id="setting-scale-factor" min="70" max="130" value="100" class="range-slider">
+            </div>
+
+            <button type="button" id="btn-reset-all-sliders" class="btn btn-outline btn-sm" style="margin-top: 6px; justify-content: center;">
+              ↺ Reset All Controls to Official Spec
+            </button>
+          </div>
+
+        </form>
+      </aside>
+
+      <!-- RIGHT COLUMN: INTERACTIVE LIVE CANVAS PREVIEW -->
+      <section class="preview-area">
+        <!-- PREVIEW TOOLBAR -->
+        <div class="preview-toolbar">
+          <div class="zoom-controls">
+            <span class="control-label">Zoom:</span>
+            <button id="btn-zoom-fit" class="btn-tool active" title="Fit to screen">Fit</button>
+            <button id="btn-zoom-50" class="btn-tool" title="50% scale">50%</button>
+            <button id="btn-zoom-75" class="btn-tool" title="75% scale">75%</button>
+            <button id="btn-zoom-100" class="btn-tool" title="100% full scale">100%</button>
+            <div class="zoom-divider"></div>
+            <button id="btn-zoom-out" class="btn-tool" title="Zoom out">−</button>
+            <span id="zoom-level-text">Fit</span>
+            <button id="btn-zoom-in" class="btn-tool" title="Zoom in">+</button>
+          </div>
+
+          <div class="overlay-controls">
+            <label class="overlay-toggle" title="Show red margin rectangles from margin red.png">
+              <input type="checkbox" id="chk-show-margins">
+              <span class="toggle-badge">
+                <span class="dot red-dot"></span> Show Red Margins
+              </span>
+            </label>
+
+            <label class="overlay-toggle" title="Compare with model.png reference">
+              <input type="checkbox" id="chk-show-model">
+              <span class="toggle-badge">
+                <span class="dot blue-dot"></span> Compare Model
+              </span>
+            </label>
+          </div>
+        </div>
+
+        <!-- MODEL OPACITY SLIDER (when compare is active) -->
+        <div id="model-compare-bar" class="model-compare-bar hidden">
+          <span>Compare Opacity:</span>
+          <input type="range" id="model-opacity-range" min="0" max="100" value="50">
+          <span id="model-opacity-val">50% Model</span>
+        </div>
+
+        <!-- CANVAS VIEWPORT -->
+        <div class="canvas-viewport" id="canvas-viewport">
+          <div class="canvas-wrapper" id="canvas-wrapper">
+            <!-- 2480 x 3508 High-Res Drawing Canvas -->
+            <canvas id="poster-canvas" width="2480" height="3508"></canvas>
+            
+            <!-- Reference Model Image (Hidden by default for comparison) -->
+            <img id="model-img" src="model.png" alt="Model Reference" class="model-overlay-img hidden">
+          </div>
+        </div>
+
+        <!-- FOOTER INFO BAR -->
+        <div class="preview-footer-bar">
+          <div class="footer-meta">
+            <span class="meta-tag">Canvas: 2480 × 3508 px (A4 @ 300 DPI)</span>
+            <span class="meta-divider">•</span>
+            <span class="meta-tag" id="status-autoscale-tag">Auto-Scale: Active</span>
+            <span class="meta-divider">•</span>
+            <span class="meta-tag" id="status-margin-tag">Margins: 100% Maintained</span>
+          </div>
+          <div class="footer-actions">
+            <button id="btn-copy-image" class="btn-micro" title="Copy high-res image to clipboard">Copy Image</button>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- LOAD ASSETS & SCRIPTS -->
+  <!-- Embedded base64 fallbacks for zero CORS file:/// compatibility -->
+  <script src="base_image_data.js"></script>
+  <script src="margin_image_data.js"></script>
+  <!-- jsPDF for standard A4 300 DPI vector PDF generation -->
+  <script src="jspdf.umd.min.js"></script>
+  <!-- Main Application Script -->
+  <script src="app.js"></script>
+</body>
+</html>
